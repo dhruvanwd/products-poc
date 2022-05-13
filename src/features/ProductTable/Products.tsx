@@ -9,7 +9,12 @@ import {
 import React, { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import styles from "./Products.module.css";
-import { fetchProducts, selectProducts } from "./productsSlice";
+import {
+  checkAllItems,
+  clearAllChecks,
+  fetchProducts,
+  selectProducts,
+} from "./productsSlice";
 import ProductTable from "./ProductTable";
 
 interface StyledFormControlLabelProps extends FormControlLabelProps {
@@ -41,11 +46,23 @@ export default function Products() {
   const [selectedValue, setSelectedValue] = React.useState("a");
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(event.target.value);
-    setSelectedValue(event.target.value);
+    const tempSelectedValue = event.target.value;
+    console.log(tempSelectedValue);
+    dispatch(clearAllChecks());
+    setSelectedValue(tempSelectedValue);
+    const findIndex = products.findIndex(
+      (item) => item.headName === tempSelectedValue
+    );
+    dispatch(checkAllItems({ index: findIndex }));
   };
   const dispatch = useAppDispatch();
-  console.log(products);
+
+  useEffect(() => {
+    if (products.length > 0 && selectedValue === "a") {
+      setSelectedValue(products[0].headName);
+      dispatch(checkAllItems({ index: 0 }));
+    }
+  }, [products, dispatch, selectedValue]);
 
   useEffect(() => {
     dispatch(fetchProducts());
@@ -55,6 +72,7 @@ export default function Products() {
     <div className={styles.row}>
       <RadioGroup
         onChange={handleChange}
+        value={selectedValue}
         name="use-radio-group"
         defaultValue="first"
       >
@@ -65,11 +83,7 @@ export default function Products() {
               label={product.headName}
               control={<Radio />}
             />
-            <ProductTable
-              key={product.headName}
-              productIndex={index}
-              productsList={product.itemList}
-            />
+            <ProductTable key={product.headName} productIndex={index} />
           </>
         ))}
       </RadioGroup>

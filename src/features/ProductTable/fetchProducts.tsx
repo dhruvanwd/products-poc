@@ -32,7 +32,7 @@ export const products = [
     headName: "Head 2",
     itemList: [
       {
-        listitemnname: "abc",
+        listemitemname: "abc",
         amount: 205,
       },
       {

@@ -6,16 +6,16 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import { useAppDispatch } from "../../app/hooks";
-import { toggleChecked } from "./productsSlice";
+import { useAppDispatch, useAppSelector } from "../../app/hooks";
+import { selectProducts, toggleChecked } from "./productsSlice";
 
 export default function ProductTable({
-  productsList,
   productIndex,
 }: {
-  productsList: any[];
   productIndex: number;
 }) {
+  const productCatlogue = useAppSelector(selectProducts);
+  const productsList: any[] = productCatlogue[productIndex].itemList;
   const dispatch = useAppDispatch();
 
   const selectedSum = React.useMemo(() => {
@@ -24,6 +24,7 @@ export default function ProductTable({
       0
     );
   }, [productsList]);
+  console.log(productsList);
 
   return (
     <TableContainer component={Paper}>
@@ -38,14 +39,14 @@ export default function ProductTable({
         <TableBody>
           {productsList.map((row, index) => (
             <TableRow key={row.listemitemname + row.amount}>
-              <TableCell
-                onClick={() => dispatch(toggleChecked({ index, productIndex }))}
-              >
-                {row.checked ? (
-                  <input type="checkbox" defaultChecked />
-                ) : (
-                  <input type="checkbox" />
-                )}
+              <TableCell>
+                <input
+                  onChange={() =>
+                    dispatch(toggleChecked({ index, productIndex }))
+                  }
+                  type="checkbox"
+                  checked={!!row.checked}
+                />
               </TableCell>
               <TableCell>{row.listemitemname}</TableCell>
               <TableCell align="right">{row.amount}</TableCell>

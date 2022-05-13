@@ -15,7 +15,7 @@ const initialState: IProducts = {
 export const fetchProducts = createAsyncThunk(
   "products/fetchProducts",
   async () => {
-    return products.map((product) => ({ ...product, checked: false }));
+    return products.map((product) => ({ ...product}));
   }
 );
 
@@ -26,6 +26,18 @@ export const productsSlice = createSlice({
   reducers: {
     setProducts: (state, action) => {
       state.productsInfo = action.payload;
+    },
+    clearAllChecks: (state) => {
+      state.productsInfo = products;
+      return state;
+    },
+    checkAllItems: (state, action) => {
+      const { index } = action.payload;
+      const itemsList = state.productsInfo[index].itemList;
+      itemsList.forEach((item: any) => {
+        item.checked = true;
+      });
+      return state;
     },
     toggleChecked: (state, action) => {
       const { index, productIndex } = action.payload;
@@ -51,7 +63,8 @@ export const productsSlice = createSlice({
   },
 });
 
-export const { setProducts, toggleChecked } = productsSlice.actions;
+export const { setProducts, toggleChecked, checkAllItems, clearAllChecks } =
+  productsSlice.actions;
 
 // The function below is called a selector and allows us to select a value from
 // the state. Selectors can also be defined inline where they're used instead of
